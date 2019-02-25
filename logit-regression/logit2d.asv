@@ -21,16 +21,16 @@ y = y - 1;
 % 10次10折交叉验证
 err0 = 0;
 for k=0:9
-%     old_error = 0;
+    old_error = 0;
     err0 = 0;
-    Iter = 1; %迭代次数
+    Iter = 0; %迭代次数
     % 循环迭代
     B = [0;0;0;0;1]; %参数，列向量为准
     
-    old_error = zeros(100,1);
+    cur_error = zeros(100,1);
     while(1)
         bx = zeros(m, 1);
-        cur_error = 0;
+        cur_error(Iter) = 0;
         % 循环样本数据计算误差
         for i=1:m
             %跳过用于验证的样本
@@ -42,12 +42,12 @@ for k=0:9
             cur_error = cur_error + (-y(i) * bx(i) + log(1 + exp(bx(i))));
         end
         % 比较两次误差，决定是否跳出迭代
-        if abs(old_error(Iter) - cur_error) < 0.000001
+        if abs(old_error - cur_error) < 0.0001
             break;
         end 
         % 更新参数（牛顿法或梯度下降法）
         Iter = Iter + 1;
-        old_error(Iter) = cur_error;
+        old_error = cur_error;
         db1 = 0;
         db2 = 0;
 
@@ -63,7 +63,8 @@ for k=0:9
 %         B = B - db1.';
         B = B - (pinv(db2) * db1.');
     % 迭代结束
-
+        disp(old_error);
+    disp(cur_error);
     end
 
     %用验证集验证准确度
@@ -79,5 +80,6 @@ for k=0:9
 end
 disp(err0);
 
+    
 % 输出迭代结果，画出图像
 % output B
